@@ -1,0 +1,31 @@
+#' Author: Patricia Condori  
+#' Date Created: 01/16/2025
+#' This R script demonstrates handling data in R, various data structures  
+#' available, and demonstrate vector operations    
+
+# Creating vectors ----
+# Q1. Create a vector named numbers containing the integers from 1 to 20.
+numbers <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)
+
+# Q2. Create a vector named names containing the following names: "Alice", "Bob", "Charlie", "David", "Emily".
+names <- c("Alice", "Bob", "Charlie", "David", "Emily")
+
+# Q3. Create a vector named mixed_data containing the following values: 10, "hello", TRUE, 3.14, 5i.
+mixed_data <- c(10, "hello", TRUE, 3.14, 5i)
+
+# Q4. Access the fourth element of the names vector created in Q2. 
+print(names[4])
+
+# Q5. Change the third element of the numbers vector created in Q1 to 30.
+numbers[3] <- 30
+
+# Creating Lists (Uses the objects created from questions Q1 to Q5) ----  
+# Q6. Create a list named my_list containing the following elements:  
+#         the vector numbers, the number 100, and the logical value TRUE.
+my_list <- list(numbers, 100, TRUE)
+
+# Q7. Access the first element of the my_list list.
+my_list[[1]]
+
+# Q8. Add a new element to the my_list list: the vector mixed_data from Q3.
+my_list[[4]] <- mixed_data
