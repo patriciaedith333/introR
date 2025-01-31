@@ -1,7 +1,7 @@
 ---
-title: "Rintro"
+title: "TASK 2"
 author: "Patricia Condori"
-date: "2025-01-23"
+date: "2025-01-30"
 output: html_document
 ---
 
@@ -11,6 +11,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown
 
+### Title 3
+
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
@@ -19,46 +21,34 @@ When you click the **Knit** button a document will be generated that includes bo
 summary(cars)
 ```
 
-## Including Plots
+## Image example 
 
-You can also embed plots, for example:
+```{r, echo=FALSE}
+knitr::include_graphics("https://cdn.educba.com/academy/wp-content/uploads/2016/04/R-studio-Functions.jpg")
+```
+
+
+**Bold Text Example**
+
+*Italic Text Example*
+
+## Technical Skills Table
+
+| Skill           | Proficiency |
+|---------------|------------|
+| R Programming | Advanced   |
+| Python        | Intermediate |
+| SQL          | Beginner   |
+| Data Analysis | Advanced   |
+
+## Hyperlink Example
+
+For more information about R Markdown, visit [R Markdown Website](https://rmarkdown.rstudio.com/).
+
+## Including Plots
 
 ```{r pressure, echo=FALSE}
 plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
-
-
-#' Author: Patricia Condori  
-#' Date Created: 01/16/2025
-#' This R script demonstrates handling data in R, various data structures  
-#' available, and demonstrate vector operations    
-
-# Creating vectors ----
-# Q1. Create a vector named numbers containing the integers from 1 to 20.
-numbers <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)
-
-# Q2. Create a vector named names containing the following names: "Alice", "Bob", "Charlie", "David", "Emily".
-names <- c("Alice", "Bob", "Charlie", "David", "Emily")
-
-# Q3. Create a vector named mixed_data containing the following values: 10, "hello", TRUE, 3.14, 5i.
-mixed_data <- c(10, "hello", TRUE, 3.14, 5i)
-
-# Q4. Access the fourth element of the names vector created in Q2. 
-print(names[4])
-
-# Q5. Change the third element of the numbers vector created in Q1 to 30.
-numbers[3] <- 30
-
-# Creating Lists (Uses the objects created from questions Q1 to Q5) ----  
-# Q6. Create a list named my_list containing the following elements:  
-#         the vector numbers, the number 100, and the logical value TRUE.
-my_list <- list(numbers, 100, TRUE)
-
-# Q7. Access the first element of the my_list list.
-my_list[[1]]
-
-# Q8. Add a new element to the my_list list: the vector mixed_data from Q3.
-my_list[[4]] <- mixed_data
