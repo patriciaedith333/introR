@@ -1,8 +1,6 @@
 ---
 title: "03_Plots_Base_Lattice_Ggplot"
-output:
-  pdf_document: default
-  rmd_document: default
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -31,6 +29,7 @@ knitr::opts_chunk$set(echo = TRUE)
   - Great for creating a wide variety of publication-quality graphics.
   
 #### Exploratory Data Analysis 
+
 
 <style>
 p.blue_box {
@@ -75,8 +74,6 @@ The original dataset used for this exploratory analysis is available at the "Pra
 
 ```{r load required libraries}
 library(ggplot2)
-library(ggplot2)
-library(scales)
 ```
 
 ```{r read_data, echo=F}
@@ -88,29 +85,49 @@ customer_data <- readRDS("custdata.rds")
 ```{r summarize_data}
 summary(customer_data)
 ```
+- Plots for continous variables (single variable) 
+1. Histogram 
+2. Box Plot 
+3. Density plot
+
+- Correlation
+1. Scatter plot
+2. Correlation matrix 
 
 - Now looking at the columns (from customer_data) that have huge variation, can we explore these columns for outliers? 
 - For example, the mean value of gas_usage is 41 and the 3rd quartile has 60. However, there is a max value of 570. Do you think there are any outliers in the data? 
 - Plot a boxplot and see the outliers? 
 
 ```{r boxplot1}
-boxplot(custdata$income, 
-        main = "Boxplot of Income", 
-        col = "lightblue", 
-        horizontal = TRUE)
+ggplot(data = customer_data )+
+  geom_boxplot(mapping=aes(x=gas_usage))
+```
+```{r}
+c1<-ggplot(data = customer_data )
+c1+
+    geom_boxplot(mapping=aes(x=gas_usage))
 
+#filter function
+#tidyr and dplyr (tidyr is to perform data cleaning and dplyr is for SQL type of operations)
+
+library(dplyr)
+filter(customer_data,
+       gas_usage<=100) %>% #pipe operator, pipe will take the result and pass it to the next     line
+  ggplot() +
+  geom_boxplot(aes(gas_usage), outlier.color='red', fill="skyblue")
 ```
 
 - What is the spread of income? Is it normally spread? Draw a histogram. 
 - set a limit on the income and see if the histogram looks better 
 - You can include an income range from 0 to $200,000 
 - Use scales::dollar_format() to include the labels in dollars 
-
+-Additionally, customize geom_histogram using any additional argument.
 ```{r histogram}
-ggplot(custdata, aes(x = income)) +
-  geom_histogram(binwidth = 5000, fill = "steelblue", color = "black") +
-  labs(title = "Income Distribution", x = "Income", y = "Count") +
-  scale_x_continuous(labels = dollar_format())
+c1+
+  geom_histogram(aes(x=income), bins=40) +
+  scale_x_continuous(labels=scales::dollar_format(), 
+                     limits=(c(0, 200000))) #+  xlim(c(0, 8000))
+
 
 ```
 
@@ -118,43 +135,34 @@ ggplot(custdata, aes(x = income)) +
 - Use the density plot to examine the age range of the customers.  
 
 ```{r density_plot}
-ggplot(custdata, aes(x = age)) +
-  geom_density(fill = "orange", alpha = 0.5) +
-  labs(title = "Density Plot of Age", x = "Age", y = "Density")
-
+c1+
+  geom_density(aes(age, fill=marital_status))
 
 ``` 
 
 taking log10 might help sometimes. Plot density plot using log10 values.
 
 ```{r density_plot_log10}
-
-ggplot(custdata, aes(x = log10(age))) +
-  geom_density(fill = "purple", alpha = 0.5) +
-  labs(title = "Log10 Transformed Density Plot of Age", 
-       x = "log10(Age)", 
-       y = "Density")
-
-
+c1 + 
+  geom_density(aes(age, fill=marital_status)) +
+  scale_x_log10()
+#transforming the data into a log10 scale 
 ```
 - Create a bar chart to present the count values of various marital_statuses  
 - Compare a stacked bar_plot against a side-by-side bar plot (y= health insurance)
 - It would have been nice if there are proportion values to present the bar plots. This can be easily done with the dplyr and tidyr functions  
 
 ```{r bar_chart}
-ggplot(custdata, aes(x = marital_status, fill = as.factor(health_ins))) +
-  geom_bar(position = "dodge") +
-  labs(title = "Side-by-Side Bar Chart: Health Insurance by Marital Status", 
-       x = "Marital Status", 
-       y = "Count", 
-       fill = "Health Insurance") +
-  theme_minimal()
-
+c1 + 
+  geom_bar(aes(x=marital_status, fill=health_ins))
+ 
 ```
 
 ```{r bar_chart_dodge}
 
- 
+ c1 + 
+  geom_bar(aes(x=marital_status, fill=health_ins), positio="dodge")
+
 ```
 
 - We need count of each combination 
@@ -163,26 +171,32 @@ ggplot(custdata, aes(x = marital_status, fill = as.factor(health_ins))) +
 health_ins_count_by_marital_status <- aggregate(sex~marital_status+as.factor(health_ins), 
                                                 data = customer_data, length)
 names(health_ins_count_by_marital_status) <- c("marital_status","health_ins", "ct")
+
+#df<-data.frame(category=c("Div", "Marr", "Sing"), count_vals=c(100,200,200))
+#ggplot(df) + 
+ # geom_bar(Aes(x=category, y=count_vals), stat="Identity")
 ```
 
 - Use the "ct" variable generated above to show the values as labels for the bar graph
 
 ```{r bar_graph_counts}
-
-ggplot(health_ins_count_by_marital_status, aes(x = marital_status, y = ct, fill = as.factor(health_ins))) +
-  geom_bar(stat = "identity", position = "dodge") +  # Creates a bar chart
-  geom_text(aes(label = ct), vjust = -0.5, position = position_dodge(0.9), size = 4) +  # Adds labels
-  labs(title = "Health Insurance Count by Marital Status", 
-       x = "Marital Status", 
-       y = "Count", 
-       fill = "Health Insurance") +
-  theme_minimal()
+ggplot(health_ins_count_by_marital_status, aes(x=marital_status, y=ct)) + 
+  geom_bar(aes(fill=health_ins), stat="identity")
 ```
 
 
 - Create a bar chart to present the count values of various state_of_res
 ```{r bar_chart_desc}
+c1 + 
+  geom_bar(aes(x=state_of_res)) +
+  theme(axis.text.x=element_text(angle=90))
 
+
+ggplot(data=health_ins_count_by_marital_status,
+       aes(x= marital_status, y = ct)) 
+  geom_bar(aes(fill = health_ins), stat="identity", position="dodge") + 
+             geom_text(aes(label=ct, group=health_ins),
+                       position=position_dodge(width=0.9), vjust=-0.5)
 
 ```
 
@@ -190,23 +204,31 @@ ggplot(health_ins_count_by_marital_status, aes(x = marital_status, y = ct, fill 
 - Facet plots with bar charts 
 
 ```{r facet_bar_plots}
+c1 + 
+  geom_bar(aes(x=marital_status)) + 
+  facet_wrap(~housing_type, scales="free_y") +
+  theme(axis.text.x=element_text(angle=45, vjust= 0.5))
 
-
-
+  #~take the entire data but split by housing type  
 ```
 
 - Compare population densities across categories 
 
 ```{r density_comparison}
-
-
+#geom_density - univariate analysis 
+c1 + 
+  geom_density(aes(age)) +
+  facet_wrap(~marital_status)
 ```
 
 
-- Scatter plots to identify relationships between two continuos variables. 
+- Scatter plots to identify relationships between two continuous variables. 
 - Create a scatter plot between age and income to see if there is any relationship between them or they are just independent variables 
 
 ```{r scatter-plot1}
+ggplot(data=customer_data, aes(x=num_vehicles, y=gas_usage)) + 
+  geom_point() +
+  geom_smooth(aes(method="lm"))
 
 ```
 
@@ -238,8 +260,17 @@ Filled bar chart | Shows the relationship between two categorical variables (var
 - HINT: Use the "cut" function to get the custom breaks 
 
 ```{r Table-custom-categories}
+customer_data$income_category<-cut(customer_data$income,
+                                   breaks = c(-7000, 20000, 40000, 80000, 100000, 200000, 400000, 1300000),
+                                   labels = c("uptp20k", "upto40k", "upto80k", "upto100k", "upto200k", "upto400k", "upto1.3M"))
 
+
+  table(customer_data$income_category)
+  
 ```
 
+```{r}
+k
+```
 
 
