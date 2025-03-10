@@ -193,7 +193,7 @@ c1 +
 
 
 ggplot(data=health_ins_count_by_marital_status,
-       aes(x= marital_status, y = ct)) 
+       aes(x= marital_status, y = ct)) +
   geom_bar(aes(fill = health_ins), stat="identity", position="dodge") + 
              geom_text(aes(label=ct, group=health_ins),
                        position=position_dodge(width=0.9), vjust=-0.5)
