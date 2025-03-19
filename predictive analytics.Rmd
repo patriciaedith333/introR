@@ -1,0 +1,106 @@
+---
+title: "Predictive Analytics - Regression"
+author: "Patricia Condori"
+date: "2025-03-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(repos = c(CRAN = "https://cran.rstudio.com/")) 
+```
+
+### Load the required libraries
+
+```{r}
+
+install.packages("readr")
+library(tidyverse)
+install.packages("ggcorrplot")
+library(ggcorrplot)
+install.packages("tidyverse")
+library(ggplot2)  # ggplot2 is a dependency of ggcorrplot
+library(ggcorrplot)  # Ensure this is loaded before usage
+
+```
+
+
+## step 1: read data
+
+```{r}
+houses <- read.csv("06_Regression_Boston_Housing_Prices.csv")
+summary(houses)
+
+```
+-Handling Missing Values
+```{r}
+head(is.na(houses$AGE))
+summary(replace(houses$AGE, is.na(houses$AGE), 0))
+
+houses_clean <- as.data.frame(lapply(houses, FUN=function(x) {
+  replace(x, is.na(x), 0)
+}))
+
+summary(houses_clean) 
+```
+
+## step 2: Split the data into Train and Test 
+
+```{r}
+set.seed(1234)
+positional_vector<-sample(c("Train", "Test"), 506,  replace=TRUE, prob=c(0.8,0.2))
+
+head(positional_vector)
+
+```
+- Using positional_vector as reference, pull the rows from houses_clean as Train and test samples 
+```{r}
+Train_dataset<- houses_clean[positional_vector == "Train",]
+Test_dataset<- houses_clean[positional_vector == "Test",]
+```
+
+## step 3: create model
+
+-collineraity check
+1. pairs
+2. ggpairs
+3. ggcooplot
+
+```{r}
+
+correlation_matrix<-cor(houses_clean)
+ggcorrplot(correlation_matrix,digits=1, 
+           lab= TRUE, 
+           lab_size=2)
+```
+
+## step 4 make predictions using the model 
+
+```{r}
+minimal_model<-lm(MEDV ~ 1, data=Train_dataset)
+final_model<- step(minimal_model, 
+                   scope= ~ CRIM + ZN + INDUS + CHAS + NOX + RM + AGE + DIS + RAD + TAX + PTRATIO + B + LSTAT)
+
+summary(final_model)
+```
+
+## STEP 5: calculate MSE
+
+```{r}
+predictions<-predict(final_model, newdata=Test_dataset[c(-14)])
+head(predictions)
+
+```
+-Calculate the MSE
+```{r}
+
+Test_dataset$predicted_output <- predictions
+test_MSE <- sum((Test_dataset$MEDV - Test_dataset$predicted_output)^2)/(nrow(Test_dataset) -  final_model$rank)
+test_MSE
+
+```
+```{r}
+#train MSE
+sum((final_model$residuals^2))/(length(final_model$residuals)-10)
+```
+
